@@ -1,0 +1,101 @@
+/* ---------------------------------------------------------------------
+   Design plan (see /mnt/skills/public/frontend-design brief process):
+
+   Subject: a physical VHF COM radio head, as found in a GA cockpit —
+   not a generic "audio player" or "dashboard". Grounding choices in real
+   avionics hardware (Garmin GTN / King KX-series radio heads) rather than
+   generic SaaS chrome.
+
+   Color (named):
+     --panel-black   #15181a   brushed-metal panel body
+     --panel-black-2 #1d2124   secondary panel / recessed areas
+     --lcd-bg        #0b1410   LCD backlight well (near-black green cast)
+     --lcd-amber     #ffb347   primary LCD digit color (classic avionics amber)
+     --lcd-green     #6ee7a0   secondary LCD readout (standby/status)
+     --accent-teal   #2dd4bf   interactive accent или (selection, focus, live dot)
+     --warn-red      #ff5c5c   ATIS unavailable / error state
+     --metal-edge    #3a4044   bezel highlight / borders
+
+   Type: one workhorse UI sans (system stack, tuned tight) for all labels
+   and prose, one monospace (ui-monospace stack) reserved ONLY for the
+   frequency readout and ATIS letter — functional, not decorative, exactly
+   like a real radio's seven-segment/dot-matrix display.
+
+   Layout: a fixed-proportion "radio head" panel is the hero, center-top,
+   with the airport search + list as a left rail feeding it. Rounded
+   corners only on the panel bezel and its physical controls (knobs,
+   buttons) — everything else (list rows, inputs) stays sharp/minimal so
+   the radio face reads as the one crafted object in the UI, per the
+   restraint principle.
+
+   Rejected defaults: no cream/terracotta, no all-caps eyebrow labels, no
+   identical rounded SaaS cards, no gradient-wash decoration. Motion is
+   limited to: power-on flicker (once), squelch LED pulse tied to actual
+   audio state, and needle/list transitions tied to real data changes.
+--------------------------------------------------------------------- */
+
+:root {
+  --panel-black: #15181a;
+  --panel-black-2: #1d2124;
+  --panel-black-3: #24292c;
+  --lcd-bg: #0b1410;
+  --lcd-amber: #ffb347;
+  --lcd-amber-dim: #6b4a1f;
+  --lcd-green: #6ee7a0;
+  --accent-teal: #2dd4bf;
+  --warn-red: #ff5c5c;
+  --warn-red-dim: #5c2626;
+  --metal-edge: #3a4044;
+  --metal-edge-light: #4d5459;
+  --text-primary: #e8e9ea;
+  --text-secondary: #9aa0a4;
+  --text-tertiary: #6b7175;
+  --bg-page: #0d0f10;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "DejaVu Sans Mono", Consolas, monospace;
+  --radius-panel: 18px;
+  --radius-control: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-page);
+  background-image:
+    radial-gradient(circle at 15% -10%, rgba(45, 212, 191, 0.05), transparent 40%),
+    radial-gradient(circle at 85% 110%, rgba(255, 179, 71, 0.04), transparent 45%);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--accent-teal);
+  color: #06201c;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
