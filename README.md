@@ -9,4 +9,4 @@ It is a continuous, pre-recorded audio or digital broadcast provided at busy air
 ### What is the point of ATIS24?
 The real point is for realism. In IRL, pilots tune into a specific airport frequency where a TTS (text to speech) voice 24/7 broadcasts the ATIS info. In this website it does the same thing: You have to tune in to the aiport, wait for the ATIS to restart so you can hear the whole information.
 
-<img width="1000" height="1000" alt="viber_image_2026-09-23_11-25-07-109 (1)" src="https://github.com/user-attachments/assets/384b6b27-ed5a-4c9a-bd87-8f61faf85998" />
+<img width="500" height="500" alt="viber_image_2026-09-23_11-25-07-109 (1)" src="https://github.com/user-attachments/assets/384b6b27-ed5a-4c9a-bd87-8f61faf85998" />
