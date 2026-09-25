@@ -1,0 +1,32 @@
+{
+  "name": "atis-radio-realtime-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Persistent Node backend: owns the 24data WebSocket, Discord OAuth/sessions, and serves ATIS + SSE to the frontend. Deploy to Fly.io/Railway/a VPS — NOT Vercel serverless (see README).",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "cookie": "^0.7.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cookie": "^0.6.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "@types/ws": "^8.5.12",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
