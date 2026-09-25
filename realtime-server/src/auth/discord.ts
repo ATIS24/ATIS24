@@ -19,11 +19,11 @@ function requireEnv(name: string): string {
 }
 
 export function getDiscordClientId(): string {
-  return requireEnv("1553085736515796992");
+  return requireEnv("");
 }
 
 function getDiscordClientSecret(): string {
-  return requireEnv("qa45SbIVta4-1Xw4E3rgwX0jJWg3uxSE");
+  return requireEnv("");
 }
 
 export function getOAuthRedirectUri(): string {
