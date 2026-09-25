@@ -1,7 +1,7 @@
 # --- Discord OAuth (create an app at https://discord.com/developers/applications) ---
 DISCORD_CLIENT_ID=1553085736515796992
 # Server-side only. NEVER expose this to the frontend or commit it.
-DISCORD_CLIENT_SECRET=
+DISCORD_CLIENT_SECRET=qa45SbIVta4-1Xw4E3rgwX0jJWg3uxSE
 # Must exactly match a Redirect URI configured on the Discord app, and
 # point at THIS server (not the frontend): e.g.
 # https://your-realtime-server.example.com/api/auth/discord/callback
