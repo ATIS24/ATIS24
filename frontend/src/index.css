@@ -1,0 +1,45 @@
+/* ---------------------------------------------------------------------
+   Base reset + page chrome. Panel-specific design tokens and the full
+   design rationale live in App.css, next to the component that uses
+   them (the radio panel is the only real "surface" in this app).
+--------------------------------------------------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0b0c0d;
+  color: #e4e5e6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: #2dd4bf;
+  color: #06201c;
+}
+
+:focus-visible {
+  outline: 2px solid #2dd4bf;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
