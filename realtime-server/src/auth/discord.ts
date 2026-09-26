@@ -13,6 +13,16 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 const DISCORD_API = "https://discord.com/api/v10";
 const STATE_MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
 
+// Discord's own API docs ask server-to-server clients to identify
+// themselves with a descriptive User-Agent
+// (https://discord.com/developers/docs/reference#user-agent). Beyond
+// just being good practice, Node's default fetch() User-Agent (a bare
+// "undici" string) is exactly the kind of generic/missing-UA signal that
+// can get a request flagged by Cloudflare's bot protection in front of
+// discord.com — which manifests as an HTML challenge page instead of a
+// real Discord API JSON response (see isLikelyChallengePage below).
+const DISCORD_USER_AGENT = "ATIS24RadioBot (https://atis24.github.io, 1.0)";
+
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -105,6 +115,29 @@ interface TokenResponse {
   scope: string;
 }
 
+/** Detects a Cloudflare (or similar) bot-challenge/HTML error page
+ * disguised as an API response, so error logs say something useful
+ * ("blocked by an intermediary, not a real Discord API error") instead
+ * of dumping a wall of minified challenge-page JavaScript. */
+function isLikelyChallengePage(text: string): boolean {
+  const sample = text.slice(0, 200).toLowerCase();
+  return (
+    sample.includes("<!doctype html") ||
+    sample.includes("<html") ||
+    sample.includes("cf-browser-verification") ||
+    sample.includes("__cf$cv$params")
+  );
+}
+
+function summarizeErrorBody(text: string): string {
+  if (isLikelyChallengePage(text)) {
+    return "received an HTML challenge/error page instead of a JSON API response " +
+      "(likely blocked by an intermediary such as Cloudflare bot protection, " +
+      "not a real Discord API error)";
+  }
+  return text.slice(0, 500);
+}
+
 export async function exchangeCodeForToken(code: string): Promise<TokenResponse> {
   const body = new URLSearchParams({
     client_id: getDiscordClientId(),
@@ -116,13 +149,17 @@ export async function exchangeCodeForToken(code: string): Promise<TokenResponse>
 
   const res = await fetch(`${DISCORD_API}/oauth2/token`, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": DISCORD_USER_AGENT,
+      Accept: "application/json",
+    },
     body: body.toString(),
   });
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Discord token exchange failed (${res.status}): ${text}`);
+    throw new Error(`Discord token exchange failed (${res.status}): ${summarizeErrorBody(text)}`);
   }
 
   return (await res.json()) as TokenResponse;
@@ -138,10 +175,15 @@ interface DiscordUserResponse {
 
 export async function fetchDiscordUser(accessToken: string): Promise<DiscordUserResponse> {
   const res = await fetch(`${DISCORD_API}/users/@me`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "User-Agent": DISCORD_USER_AGENT,
+      Accept: "application/json",
+    },
   });
   if (!res.ok) {
-    throw new Error(`Discord /users/@me failed with ${res.status}`);
+    const text = await res.text().catch(() => "");
+    throw new Error(`Discord /users/@me failed (${res.status}): ${summarizeErrorBody(text)}`);
   }
   return (await res.json()) as DiscordUserResponse;
 }
@@ -165,10 +207,15 @@ export async function checkGuildMembership(accessToken: string): Promise<boolean
   if (!guildId) return null;
 
   const res = await fetch(`${DISCORD_API}/users/@me/guilds`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "User-Agent": DISCORD_USER_AGENT,
+      Accept: "application/json",
+    },
   });
   if (!res.ok) {
-    throw new Error(`Discord /users/@me/guilds failed with ${res.status}`);
+    const text = await res.text().catch(() => "");
+    throw new Error(`Discord /users/@me/guilds failed (${res.status}): ${summarizeErrorBody(text)}`);
   }
   const guilds = (await res.json()) as DiscordGuildMembership[];
   return guilds.some((g) => g.id === guildId);
